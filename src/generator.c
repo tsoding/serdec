@@ -13,14 +13,14 @@ int main(int argc, char **argv)
 {
     const char *program_name = shift(argv, argc);
 
-    if (argc < 0) {
+    if (argc <= 0) {
         usage(program_name);
         fprintf(stderr, "ERROR: no input is provided\n");
         return 1;
     }
     const char *input_path = shift(argv, argc);
 
-    if (argc < 0) {
+    if (argc <= 0) {
         usage(program_name);
         fprintf(stderr, "ERROR: no output is provided\n");
         return 1;

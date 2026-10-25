@@ -1,8 +1,10 @@
 {
-    "name": "John Dough",
-    "age": 69.0,
-    "location": "North Pole",
-    "BodyCount": 420.0,
-    "height": 80085,
-    "married": false
+	"name": "John Dough",
+	"age": 69.0,
+	"location": "North Pole",
+	"BodyCount": 420.0,
+	"height": 80085,
+	"status": {
+		"married": true
+	}
 }

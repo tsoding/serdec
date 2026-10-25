@@ -20,7 +20,7 @@ void generate_struct_jim_serializer(Struct strukt, String_Builder *out)
     sb_appendf(out, "    jim_object_begin(jim);\n");
     da_foreach(Field, field, &strukt) {
         sb_appendf(out, "        jim_member_key(jim, \"%s\");\n", field->tag);
-        switch (field->type) {
+        switch (field->p_type) {
         case TYPE_STRING:
             sb_appendf(out, "        jim_string(jim, s.%s);\n", field->name);
             break;
@@ -32,6 +32,9 @@ void generate_struct_jim_serializer(Struct strukt, String_Builder *out)
             break;
         case TYPE_BOOL:
             sb_appendf(out, "        jim_bool(jim, s.%s);\n", field->name);
+            break;
+        case TYPE_AUTO:
+            sb_appendf(out, "        jim_%s(jim, s.%s);\n", field->type, field->name);
             break;
         case COUNT_TYPES: default: UNREACHABLE("field->type");
         }
@@ -48,7 +51,7 @@ void generate_struct_jimp_deserializer(Struct strukt, String_Builder *out)
     sb_appendf(out, "    while (jimp_object_member(jimp)) {\n");
     da_foreach(Field, field, &strukt) {
         sb_appendf(out, "        if (strcmp(jimp->string, \"%s\") == 0) {\n", field->tag); // TODO: tag should be properly escaped
-        switch (field->type) {
+        switch (field->p_type) {
         case TYPE_STRING:
             sb_appendf(out, "            if (!jimp_string(jimp)) return false;\n");
             sb_appendf(out, "            s->%s = strdup(jimp->string); // memory leak\n", field->name);
@@ -64,6 +67,9 @@ void generate_struct_jimp_deserializer(Struct strukt, String_Builder *out)
         case TYPE_BOOL:
             sb_appendf(out, "            if (!jimp_bool(jimp)) return false;\n");
             sb_appendf(out, "            s->%s = jimp->boolean;\n", field->name);
+            break;
+        case TYPE_AUTO:
+            sb_appendf(out, "            if (!jimp_%s(jimp, &s->%s)) return false;\n", field->type, field->name);
             break;
         case COUNT_TYPES: default: UNREACHABLE("field->type");
         }
